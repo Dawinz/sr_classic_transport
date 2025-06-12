@@ -22,6 +22,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4
 
 dependency_overrides:
   carousel_slider: ^4.2.0
@@ -41,3 +42,12 @@ flutter:
     - assets/images/zambia_lusaka.png
     - assets/images/burundi_bujumbura.png
     - assets/images/app_icon.png
+
+flutter_icons:
+  android: true
+  ios: true
+  linux: true
+  macos: true
+  web: true
+  windows: true
+  image_path: assets/images/app_icon.png

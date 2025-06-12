@@ -43,11 +43,12 @@ flutter:
     - assets/images/burundi_bujumbura.png
     - assets/images/app_icon.png
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
   linux: true
   macos: true
-  web: true
+  web:
+    generate: true
   windows: true
   image_path: assets/images/app_icon.png

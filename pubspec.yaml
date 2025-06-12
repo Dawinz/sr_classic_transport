@@ -1,0 +1,42 @@
+name: sr_classic_transport
+description: A new Flutter application.
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  carousel_slider: ^4.2.0
+  shared_preferences: ^2.2.2
+  cupertino_icons: ^1.0.8
+  font_awesome_flutter: ^10.5.0
+  provider: ^6.1.0
+  share_plus: ^7.2.1
+  url_launcher: ^6.2.1
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+dependency_overrides:
+  carousel_slider: ^4.2.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/language_icon.png
+    - assets/images/sr_classic_logo.png
+    - assets/images/bus_background.png
+    - assets/data/shipments.json
+    - assets/images/tanzania_dar.png
+    - assets/images/drc_lubumbashi.png
+    - assets/images/kenya_nairobi.png
+    - assets/images/uganda_kampala.png
+    - assets/images/zimbabwe_harare.png
+    - assets/images/zambia_lusaka.png
+    - assets/images/burundi_bujumbura.png

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ContactLocationsPage extends StatelessWidget {
   const ContactLocationsPage({super.key});
@@ -67,17 +68,29 @@ class ContactLocationsPage extends StatelessWidget {
             location: 'Intercity Bus Terminal, Shop #5',
             phones: ['+260 973 456 789'],
           ),
-          _buildSection(
-            context,
-            country: 'Burundi',
-            city: 'Bujumbura',
-            image: 'burundi_bujumbura.png',
-            location: 'Avenue du Large, Zone Rohero',
-            phones: ['+257 612 345 67'],
-          ),
-        ],
+        _buildSection(
+          context,
+          country: 'Burundi',
+          city: 'Bujumbura',
+          image: 'burundi_bujumbura.png',
+          location: 'Avenue du Large, Zone Rohero',
+          phones: ['+257 612 345 67'],
+        ),
+      ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        onPressed: _launchWhatsApp,
+        child: const Icon(Icons.whatsapp),
       ),
     );
+  }
+
+  void _launchWhatsApp() async {
+    final uri = Uri.parse('https://wa.me/255682756699');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   Widget _buildSection(
@@ -93,11 +106,19 @@ class ContactLocationsPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20),
-        Text(country,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white)),
+        Text(
+          country,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(height: 4),
-        Text(city, style: const TextStyle(color: Colors.white70)),
+        Text(
+          city,
+          style: const TextStyle(color: Colors.white70, fontSize: 16),
+        ),
         const SizedBox(height: 10),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,13 +143,19 @@ class ContactLocationsPage extends StatelessWidget {
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
                     ),
                   const SizedBox(height: 6),
-                  ...phones.map((phone) => Text(
-                    phone,
-                    style: const TextStyle(color: Colors.white70),
-                  )),
+                  ...phones.map(
+                    (phone) => Text(
+                      phone,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

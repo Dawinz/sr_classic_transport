@@ -158,7 +158,7 @@ class SettingsPage extends StatelessWidget {
                 title: loc.translate('contact_us'),
                 onTap: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ContactLocationsPage()),
+                    MaterialPageRoute(builder: (_) => const ContactPage()),
                   );
                 },
               ),

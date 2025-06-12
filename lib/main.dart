@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const TrackPage(key: ValueKey('TrackPage')),
     const BookingPage(key: ValueKey('BookingPage')),
     const EnhancedHistoryPage(key: ValueKey('HistoryPage')),
-    const ContactPage(key: ValueKey('ContactPage')),
+    const ContactLocationsPage(key: ValueKey('ContactPage')),
     const SettingsPage(key: ValueKey('SettingsPage')),
   ];
 

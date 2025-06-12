@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ContactLocationsPage extends StatelessWidget {
   const ContactLocationsPage({super.key});
@@ -81,7 +82,7 @@ class ContactLocationsPage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
         onPressed: _launchWhatsApp,
-        child: const Icon(Icons.whatsapp),
+        child: const FaIcon(FontAwesomeIcons.whatsapp),
       ),
     );
   }

@@ -12,8 +12,8 @@ class TermsOfServicePage extends StatelessWidget {
     String content,
   ) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final textTheme = theme.textTheme;
+    final textColor = theme.colorScheme.onBackground;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -21,14 +21,14 @@ class TermsOfServicePage extends StatelessWidget {
           title,
           style: textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : Colors.black,
+            color: textColor,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           content,
           style: textTheme.bodyMedium?.copyWith(
-            color: isDark ? Colors.white : Colors.black,
+            color: textColor,
           ),
         ),
         const SizedBox(height: 16),

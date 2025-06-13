@@ -163,7 +163,7 @@ class ContactLocationsPage extends StatelessWidget {
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 16,
-                          decoration: TextDecoration.underline,
+                          decoration: TextDecoration.none,
                         ),
                       ),
                     ),

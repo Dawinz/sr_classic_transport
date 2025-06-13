@@ -94,6 +94,13 @@ class ContactLocationsPage extends StatelessWidget {
     }
   }
 
+  Future<void> _callPhoneNumber(String phoneNumber) async {
+    final uri = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+
   Widget _buildSection(
       BuildContext context, {
         required String country,
@@ -149,11 +156,15 @@ class ContactLocationsPage extends StatelessWidget {
                     ),
                   const SizedBox(height: 6),
                   ...phones.map(
-                    (phone) => Text(
-                      phone,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 16,
+                    (phone) => GestureDetector(
+                      onTap: () => _callPhoneNumber(phone),
+                      child: Text(
+                        phone,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                          decoration: TextDecoration.underline,
+                        ),
                       ),
                     ),
                   ),

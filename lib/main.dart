@@ -147,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.contact_page_outlined),
-              label: AppLocalizations(Provider.of<LanguageProvider>(context).languageCode).translate('contact_us'),
+              label: AppLocalizations(Provider.of<LanguageProvider>(context).languageCode).translate('contact'),
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.settings),

@@ -19,6 +19,7 @@ class CargoDetailsPage extends StatelessWidget {
     final Map<String, dynamic>? dispatchInfo = cargo['dispatchInfo'];
     final Map<String, dynamic> cargoInfo = cargo['cargoInfo'];
 
+    /// Convenience widget used to present a label/value pair.
     Widget buildRow(String label, String value, {bool alt = false}) {
       final bgColor = isDark
           ? (alt ? const Color(0xFF2A2A2A) : const Color(0xFF1E1E1E))

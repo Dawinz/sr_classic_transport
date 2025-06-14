@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import 'localization.dart';
 import 'providers/language_provider.dart';
 
+/// Displays a list of previously tracked shipments from a bundled JSON file.
+
 class EnhancedHistoryPage extends StatefulWidget {
   const EnhancedHistoryPage({super.key});
 
@@ -21,6 +23,8 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
     super.initState();
     _historyFuture = _loadHistory();
   }
+
+  /// Reads shipment history information from the JSON asset.
 
   Future<List<dynamic>> _loadHistory() async {
     final data = await rootBundle.loadString('assets/data/shipments.json');
@@ -179,6 +183,8 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
       ),
     );
   }
+  /// Helper widget used to display a single row of label/value information.
+
 
   Widget _buildInfoStripe(BuildContext context, String label, String value, bool isDark, {bool alt = false}) {
     final theme = Theme.of(context);

@@ -4,6 +4,7 @@ import 'localization.dart';
 import 'providers/language_provider.dart';
 
 class AboutUsPage extends StatelessWidget {
+/// Displays information about the company (to be implemented).
   const AboutUsPage({super.key});
 
   @override

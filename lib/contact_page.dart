@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+/// Page displaying important contact information for all offices.
+
 class ContactLocationsPage extends StatelessWidget {
   const ContactLocationsPage({super.key});
 
@@ -87,12 +89,16 @@ class ContactLocationsPage extends StatelessWidget {
     );
   }
 
+  /// Opens a WhatsApp chat with the default support number.
+
   void _launchWhatsApp() async {
     final uri = Uri.parse('https://wa.me/255682756699');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
+
+  /// Launches the dialer with the given phone number.
 
   Future<void> _callPhoneNumber(String phoneNumber) async {
     final uri = Uri(scheme: 'tel', path: phoneNumber);

@@ -1,3 +1,4 @@
+/// Provides simple localization without relying on intl packages.
 class AppLocalizations {
   final String languageCode;
   AppLocalizations(this.languageCode);
@@ -185,6 +186,7 @@ class AppLocalizations {
     },
   };
 
+  /// Returns the localized value for the given key or the key itself.
   String translate(String key) {
     return _localizedValues[languageCode]?[key] ?? key;
   }

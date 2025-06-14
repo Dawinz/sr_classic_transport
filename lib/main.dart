@@ -11,6 +11,12 @@ import 'settings_page.dart';
 import 'providers/theme_provider.dart';
 import 'providers/language_provider.dart';
 import 'localization.dart';
+/// Entry point of the SR Classic Transport application.
+///
+/// This function loads the saved theme and language settings and
+/// determines whether onboarding should be shown before running
+/// the app.
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +38,11 @@ void main() async {
     ),
   );
 }
+
+/// Root widget that configures theming and localization.
+///
+/// Depending on whether onboarding is complete it shows the
+/// home page or the onboarding screen.
 
 class MyApp extends StatelessWidget {
   final bool isOnboardingComplete;
@@ -76,6 +87,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// Stateful container for the five main navigation tabs.
+/// It keeps track of the currently selected index and animates
+/// page transitions.
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -87,6 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
+      // Pages shown in the bottom navigation bar order.
+
     const TrackPage(key: ValueKey('TrackPage')),
     const BookingPage(key: ValueKey('BookingPage')),
     const EnhancedHistoryPage(key: ValueKey('HistoryPage')),

@@ -4,6 +4,7 @@ import 'localization.dart';
 import 'providers/language_provider.dart';
 
 class BookingPage extends StatelessWidget {
+/// Placeholder page for future booking features.
   const BookingPage({super.key});
 
   @override

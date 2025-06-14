@@ -5,6 +5,8 @@ import 'providers/language_provider.dart';
 import 'localization.dart';
 import 'main.dart'; // App home page
 
+/// Simple onboarding flow that lets the user choose a language.
+
 class OnboardingScreen extends StatefulWidget {
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
@@ -20,6 +22,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   };
   final Color brandColor = Color(0xFFD32F2F); // Example brand color
 
+  /// Marks onboarding as finished and saves the selected language.
+
   Future<void> completeOnboarding() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isOnboardingComplete', true);
@@ -27,6 +31,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       await prefs.setString('languageCode', languageCodes[selectedLanguage!]!);
     }
   }
+
+  /// Alerts the user when they attempt to continue without choosing a language.
 
   void showLanguageSelectionPrompt(BuildContext context) {
     showDialog(

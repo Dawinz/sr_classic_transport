@@ -27,6 +27,8 @@ class _TrackPageState extends State<TrackPage> {
     _loadSavedNumber();
   }
 
+  /// Loads a previously saved phone number from persistent storage.
+
   Future<void> _loadSavedNumber() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString('savedPhoneNumber');
@@ -35,10 +37,15 @@ class _TrackPageState extends State<TrackPage> {
     }
   }
 
+  /// Reads the mock shipments data bundled with the app.
+
   Future<List<dynamic>> _loadShipments() async {
     final data = await rootBundle.loadString('assets/data/shipments.json');
     return json.decode(data) as List<dynamic>;
   }
+
+  /// Prompts the user to optionally save the entered phone number.
+  /// Returns true when the dialog is dismissed with any positive action.
 
   Future<bool> _showSaveNumberDialog(String number, AppLocalizations loc) async {
     final isLight = Theme.of(context).brightness == Brightness.light;
@@ -248,6 +255,8 @@ class _TrackPageState extends State<TrackPage> {
       ),
     );
   }
+  /// Returns a styled [InputDecoration] used by the text fields on this page.
+
 
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(

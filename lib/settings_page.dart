@@ -10,6 +10,7 @@ import 'about_us_page.dart';
 import 'terms_of_service_page.dart';
 import 'contact_page.dart';
 
+/// Settings and preferences for the application.
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
@@ -193,6 +194,7 @@ class SettingsPage extends StatelessWidget {
 }
 
 // Section Title
+/// Small heading used to group related settings.
 class SectionTitle extends StatelessWidget {
   final String title;
 
@@ -215,6 +217,7 @@ class SectionTitle extends StatelessWidget {
 }
 
 // Setting Item Card
+/// Reusable card used throughout the settings list.
 class SettingItem extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -239,6 +242,7 @@ class SettingItem extends StatelessWidget {
 }
 
 // Theme Toggle Widget
+/// Card that lets the user pick between light, dark or system theme.
 class ThemeToggleSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

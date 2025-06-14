@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import 'localization.dart';
 import 'providers/language_provider.dart';
 
+/// Contains static terms of service text for users to read.
 class TermsOfServicePage extends StatelessWidget {
   const TermsOfServicePage({super.key});
 
+  /// Helper used to render one section of the terms.
   Widget _buildSection(
     BuildContext context,
     String title,

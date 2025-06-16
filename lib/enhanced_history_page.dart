@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:html/parser.dart' as html_parser;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'status_utils.dart';
@@ -8,7 +8,8 @@ import 'status_utils.dart';
 import 'localization.dart';
 import 'providers/language_provider.dart';
 
-/// Displays a list of previously tracked shipments from a bundled JSON file.
+/// Displays a list of previously tracked shipments fetched from the backend
+/// service using the receiver's phone number.
 
 class EnhancedHistoryPage extends StatefulWidget {
   const EnhancedHistoryPage({super.key});
@@ -44,13 +45,85 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
   Future<List<Map<String, dynamic>>?> _fetchHistoryData(String phone) async {
     final url = Uri.parse('http://217.29.139.44:555/track/data.php');
     try {
-      final response = await http.post(url, body: {'phone_no': phone});
+      final response = await http.post(url, headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }, body: {
+        'getData': '1',
+        'start': '0',
+        'limit': '10',
+        'phone_no': phone,
+        'state': "r_no='$phone'",
+      });
       if (response.statusCode != 200) return null;
-      return List<Map<String, dynamic>>.from(
-          json.decode(response.body) as List<dynamic>);
+      return _parseHistoryHtml(response.body);
     } catch (_) {
       return null;
     }
+  }
+
+  List<Map<String, dynamic>> _parseHistoryHtml(String body) {
+    final document = html_parser.parse(body);
+    final sections = document.querySelectorAll('section');
+    final List<Map<String, dynamic>> cargos = [];
+    for (final section in sections) {
+      final info = <String, String>{};
+      final code = section.querySelector('h2')?.text.trim() ?? '';
+      if (code.isNotEmpty) info['Code'] = code;
+      final route = section.querySelector('p.btSubTitle')?.text.trim() ?? '';
+      if (route.isNotEmpty) info['Route'] = route;
+      for (final li in section.querySelectorAll('li')) {
+        final spans = li.querySelectorAll('span');
+        if (spans.length >= 2) {
+          var key = spans[0].text.trim();
+          var value = spans[1].text.replaceAll('\u00a0', ' ').trim();
+          if (value.startsWith('-')) value = value.substring(1).trim();
+          info[key] = value;
+        } else {
+          final text = li.text;
+          final idx = text.indexOf(':');
+          if (idx != -1) {
+            final key = text.substring(0, idx).trim();
+            final value = text.substring(idx + 1).trim();
+            info[key] = value;
+          }
+        }
+      }
+      cargos.add(_convertToCargo(info));
+    }
+    return cargos;
+  }
+
+  Map<String, dynamic> _convertToCargo(Map<String, String> info) {
+    String _first(List<String> keys) {
+      for (final k in keys) {
+        if (info.containsKey(k)) return info[k]!;
+      }
+      return '';
+    }
+
+    final dispatchDate = _first(['Dispatch date', 'Dispatch Date']);
+    final dispatchStatus = _first(['Dispatch status', 'Dispatch Status']);
+
+    return {
+      'id': _first(['Code', 'ID', 'Ticket number', 'Ticket No', 'Ticket']),
+      'date': info['Date'] ?? info['Registered Date'] ?? '',
+      'status': info['Status'] ?? '',
+      'route': info['Route'] ?? '',
+      'dispatchInfo': (dispatchDate.isNotEmpty || dispatchStatus.isNotEmpty)
+          ? {'date': dispatchDate, 'status': dispatchStatus}
+          : null,
+      'cargoInfo': {
+        'registeredDateTime':
+            _first(['Registered Date & Time', 'Registered date', 'Registered Date']),
+        'senderName': _first(["Sender's name", 'Sender name']),
+        'receiverName': _first(["Receiver's name", 'Receiver name']),
+        'senderPhone': _first(["Sender's phone number", 'Sender phone']),
+        'receiverPhone': _first(["Receiver's phone number", 'Receiver phone']),
+        'quantity': info['Quantity'] ?? '',
+        'paymentOption': _first(['Payment option', 'Payment Option']),
+        'totalPrice': _first(['Total price', 'Total Price']),
+      }
+    };
   }
 
   @override

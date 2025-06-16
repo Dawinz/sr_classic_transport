@@ -35,7 +35,6 @@ flutter:
     - assets/images/language_icon.png
     - assets/images/sr_classic_logo.png
     - assets/images/bus_background.png
-    - assets/data/shipments.json
     - assets/images/tanzania_dar.png
     - assets/images/drc_lubumbashi.png
     - assets/images/kenya_nairobi.png

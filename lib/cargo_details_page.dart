@@ -46,6 +46,22 @@ class CargoDetailsPage extends StatelessWidget {
       );
     }
 
+    /// Section header used to separate groups of information.
+    Widget buildSectionHeader(String text) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        width: double.infinity,
+        color: theme.scaffoldBackgroundColor,
+        child: Text(
+          text,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black,
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(loc.translate('cargo_details')),
@@ -76,7 +92,7 @@ class CargoDetailsPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          cargo['id'],
+                          '${loc.translate('cargo_id')}: ${cargo['id']}',
                           style: theme.textTheme.titleLarge?.copyWith(
                               color: Colors.white, fontWeight: FontWeight.bold),
                         ),
@@ -123,19 +139,21 @@ class CargoDetailsPage extends StatelessWidget {
           ),
           if (dispatchInfo != null) ...[
             const SizedBox(height: 16),
+            buildSectionHeader(loc.translate('dispatch_info')),
             buildRow(loc.translate('dispatch_date'), dispatchInfo['date']),
             buildRow(loc.translate('dispatch_status'), dispatchInfo['status'], alt: true),
           ],
           const SizedBox(height: 16),
-          buildRow(loc.translate('registered'), cargoInfo['registeredDateTime']),
+          buildSectionHeader(loc.translate('cargo_info')),
+          buildRow(loc.translate('status'), cargo['status']),
+          buildRow(loc.translate('registered'), cargoInfo['registeredDateTime'], alt: true),
           buildRow(loc.translate('sender'),
-              '${cargoInfo['senderName']} - ${cargoInfo['senderPhone']}',
-              alt: true),
+              '${cargoInfo['senderName']} - ${cargoInfo['senderPhone']}'),
           buildRow(loc.translate('receiver'),
-              '${cargoInfo['receiverName']} - ${cargoInfo['receiverPhone']}'),
-          buildRow(loc.translate('quantity'), cargoInfo['quantity'], alt: true),
-          buildRow(loc.translate('payment_option'), cargoInfo['paymentOption']),
-          buildRow(loc.translate('total_price'), cargoInfo['totalPrice'], alt: true),
+              '${cargoInfo['receiverName']} - ${cargoInfo['receiverPhone']}', alt: true),
+          buildRow(loc.translate('quantity'), cargoInfo['quantity']),
+          buildRow(loc.translate('payment_option'), cargoInfo['paymentOption'], alt: true),
+          buildRow(loc.translate('total_price'), cargoInfo['totalPrice']),
           const SizedBox(height: 16),
         ],
       ),

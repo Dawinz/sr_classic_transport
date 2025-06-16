@@ -42,10 +42,9 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
   }
 
   Future<List<Map<String, dynamic>>?> _fetchHistoryData(String phone) async {
-    final url =
-        Uri.parse('http://217.29.139.44:555/track/history.php?phone=$phone');
+    final url = Uri.parse('http://217.29.139.44:555/track/data.php');
     try {
-      final response = await http.get(url);
+      final response = await http.post(url, body: {'phone_no': phone});
       if (response.statusCode != 200) return null;
       return List<Map<String, dynamic>>.from(
           json.decode(response.body) as List<dynamic>);

@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html_parser;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'status_utils.dart';
 
 import 'localization.dart';
 import 'providers/language_provider.dart';
@@ -262,9 +261,8 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
           return ListView.builder(
             itemCount: historyItems.length,
             itemBuilder: (context, index) {
-              final status = historyItems[index]['status']?.toString();
-              final isArrived = cargoArrived(status);
-              final baseColor = statusColor(status);
+              final isDispatched = historyItems[index]['dispatchInfo'] != null;
+              final baseColor = isDispatched ? Colors.red : Colors.blue;
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
@@ -317,7 +315,7 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                                   ],
                                 ),
                               ),
-                              if (isArrived)
+                              if (isDispatched)
                                 ExpansionTile(
                                   title: Text(
                                     loc.translate('dispatch_info'),
@@ -408,7 +406,7 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                           ],
                         ),
                         child: Text(
-                          loc.translate(isArrived ? 'out' : 'store'),
+                          loc.translate(isDispatched ? 'out' : 'store'),
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

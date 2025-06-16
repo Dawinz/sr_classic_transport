@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
+import 'package:html/parser.dart' as html_parser;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'cargo_details_page.dart';
+import 'tracking_result_page.dart';
 import 'providers/language_provider.dart';
 import 'localization.dart';
 
@@ -20,6 +19,7 @@ class _TrackPageState extends State<TrackPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController codeController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -37,12 +37,33 @@ class _TrackPageState extends State<TrackPage> {
     }
   }
 
-  /// Reads the mock shipments data bundled with the app.
-
-  Future<List<dynamic>> _loadShipments() async {
-    final data = await rootBundle.loadString('assets/data/shipments.json');
-    return json.decode(data) as List<dynamic>;
+  /// Fetches tracking information from the remote API and returns a map of
+  /// extracted values keyed by their labels.
+  Future<Map<String, String>?> _fetchTrackingData(String code) async {
+    final url =
+        Uri.parse('http://217.29.139.44:555/track/ticket_info.php?code=$code');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode != 200) return null;
+      final document = html_parser.parse(response.body);
+      final Map<String, String> result = {};
+      for (final li in document.querySelectorAll('li')) {
+        final spans = li.querySelectorAll('span');
+        if (spans.length >= 2) {
+          var key = spans[0].text.trim();
+          var value = spans[1].text.replaceAll('\u00a0', ' ').trim();
+          if (value.startsWith('-')) {
+            value = value.substring(1).trim();
+          }
+          result[key] = value;
+        }
+      }
+      return result.isEmpty ? null : result;
+    } catch (_) {
+      return null;
+    }
   }
+
 
   /// Prompts the user to optionally save the entered phone number.
   /// Returns true when the dialog is dismissed with any positive action.
@@ -200,39 +221,38 @@ class _TrackPageState extends State<TrackPage> {
                             final proceed = await _showSaveNumberDialog(phone, loc);
                             if (!proceed) return;
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(loc.translate('checking_package'))),
-                            );
-                            final shipments = await _loadShipments();
+                            setState(() {
+                              _isLoading = true;
+                            });
                             final code = codeController.text.trim();
-                            Map<String, dynamic>? found;
-                            for (final item in shipments) {
-                              final cargo = item as Map<String, dynamic>;
-                              final cargoInfo = cargo['cargoInfo'] as Map<String, dynamic>;
-                              final sender = cargoInfo['senderPhone'];
-                              final receiver = cargoInfo['receiverPhone'];
-                              if (cargo['id'].toString().toLowerCase() == code.toLowerCase() &&
-                                  (sender == phone || receiver == phone)) {
-                                found = cargo;
-                                break;
+                            final data = await _fetchTrackingData(code);
+                            setState(() {
+                              _isLoading = false;
+                            });
+
+                            if (data != null) {
+                              final senderPhone = data["Sender's phone number"] ?? '';
+                              final receiverPhone = data["Receiver's phone number"] ?? '';
+                              if (senderPhone.contains(phone) || receiverPhone.contains(phone)) {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    pageBuilder: (_, animation, __) {
+                                      return SlideTransition(
+                                        position: Tween<Offset>(
+                                          begin: const Offset(1, 0),
+                                          end: Offset.zero,
+                                        ).chain(CurveTween(curve: Curves.ease)).animate(animation),
+                                        child: TrackingResultPage(info: data),
+                                      );
+                                    },
+                                    transitionDuration: const Duration(milliseconds: 300),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(loc.translate('no_cargo_found'))),
+                                );
                               }
-                            }
-                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                            if (found != null) {
-                              Navigator.of(context).push(
-                                PageRouteBuilder(
-                                  pageBuilder: (_, animation, __) {
-                                    return SlideTransition(
-                                      position: Tween<Offset>(
-                                        begin: const Offset(1, 0),
-                                        end: Offset.zero,
-                                      ).chain(CurveTween(curve: Curves.ease)).animate(animation),
-                                      child: CargoDetailsPage(cargo: found!),
-                                    );
-                                  },
-                                  transitionDuration: const Duration(milliseconds: 300),
-                                ),
-                              );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(loc.translate('no_cargo_found'))),
@@ -250,7 +270,12 @@ class _TrackPageState extends State<TrackPage> {
                 ),
               ),
             ),
-          )
+          ),
+          if (_isLoading)
+            Container(
+              color: Colors.black45,
+              child: const Center(child: CircularProgressIndicator()),
+            ),
         ],
       ),
     );

@@ -4,7 +4,7 @@ import 'package:html/parser.dart' as html_parser;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'tracking_result_page.dart';
+import 'cargo_details_page.dart';
 import 'providers/language_provider.dart';
 import 'localization.dart';
 
@@ -62,6 +62,43 @@ class _TrackPageState extends State<TrackPage> {
     } catch (_) {
       return null;
     }
+  }
+
+  /// Converts the raw info map from [_fetchTrackingData] into the structure
+  /// expected by [CargoDetailsPage]. This attempts to map various possible
+  /// keys returned by the backend to the fields used previously when the data
+  /// came from `shipments.json`.
+  Map<String, dynamic> _convertToCargo(Map<String, String> info) {
+    String _first(List<String> keys) {
+      for (final k in keys) {
+        if (info.containsKey(k)) return info[k]!;
+      }
+      return '';
+    }
+
+    final dispatchDate = _first(['Dispatch date', 'Dispatch Date']);
+    final dispatchStatus = _first(['Dispatch status', 'Dispatch Status']);
+
+    return {
+      'id': _first(['Code', 'ID', 'Ticket number', 'Ticket No', 'Ticket']),
+      'date': info['Date'] ?? '',
+      'status': info['Status'] ?? '',
+      'route': info['Route'] ?? '',
+      'dispatchInfo': (dispatchDate.isNotEmpty || dispatchStatus.isNotEmpty)
+          ? {'date': dispatchDate, 'status': dispatchStatus}
+          : null,
+      'cargoInfo': {
+        'registeredDateTime':
+            _first(['Registered Date & Time', 'Registered date']),
+        'senderName': _first(["Sender's name", 'Sender name']),
+        'receiverName': _first(["Receiver's name", 'Receiver name']),
+        'senderPhone': _first(["Sender's phone number", 'Sender phone']),
+        'receiverPhone': _first(["Receiver's phone number", 'Receiver phone']),
+        'quantity': info['Quantity'] ?? '',
+        'paymentOption': _first(['Payment option', 'Payment Option']),
+        'totalPrice': _first(['Total price', 'Total Price']),
+      }
+    };
   }
 
 
@@ -233,7 +270,9 @@ class _TrackPageState extends State<TrackPage> {
                             if (data != null) {
                               final senderPhone = data["Sender's phone number"] ?? '';
                               final receiverPhone = data["Receiver's phone number"] ?? '';
-                              if (senderPhone.contains(phone) || receiverPhone.contains(phone)) {
+                              if (senderPhone.contains(phone) ||
+                                  receiverPhone.contains(phone)) {
+                                final cargo = _convertToCargo(data);
                                 Navigator.of(context).push(
                                   PageRouteBuilder(
                                     pageBuilder: (_, animation, __) {
@@ -242,7 +281,7 @@ class _TrackPageState extends State<TrackPage> {
                                           begin: const Offset(1, 0),
                                           end: Offset.zero,
                                         ).chain(CurveTween(curve: Curves.ease)).animate(animation),
-                                        child: TrackingResultPage(info: data),
+                                        child: CargoDetailsPage(cargo: cargo),
                                       );
                                     },
                                     transitionDuration: const Duration(milliseconds: 300),

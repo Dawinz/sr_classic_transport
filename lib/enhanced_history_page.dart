@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'localization.dart';
 import 'providers/language_provider.dart';
@@ -16,42 +17,174 @@ class EnhancedHistoryPage extends StatefulWidget {
 }
 
 class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
-  late Future<List<dynamic>> _historyFuture;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController phoneController = TextEditingController();
+
+  Future<List<Map<String, dynamic>>?>? _historyFuture;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _historyFuture = _loadHistory();
+    _loadSavedNumber();
   }
 
-  /// Reads shipment history information from the JSON asset.
+  Future<void> _loadSavedNumber() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString('savedPhoneNumber');
+    if (saved != null && saved.isNotEmpty) {
+      phoneController.text = saved;
+      setState(() {
+        _historyFuture = _fetchHistoryData(saved);
+      });
+    }
+  }
 
-  Future<List<dynamic>> _loadHistory() async {
-    final data = await rootBundle.loadString('assets/data/shipments.json');
-    return json.decode(data) as List<dynamic>;
+  Future<List<Map<String, dynamic>>?> _fetchHistoryData(String phone) async {
+    final url =
+        Uri.parse('http://217.29.139.44:555/track/history.php?phone=$phone');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode != 200) return null;
+      return List<Map<String, dynamic>>.from(
+          json.decode(response.body) as List<dynamic>);
+    } catch (_) {
+      return null;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final loc = AppLocalizations(Provider.of<LanguageProvider>(context).languageCode);
+    final loc =
+        AppLocalizations(Provider.of<LanguageProvider>(context).languageCode);
+
+    if (_historyFuture == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(loc.translate('tracking_history')),
+        ),
+        body: Stack(
+          children: [
+            Image.asset(
+              'assets/images/bus_background.png',
+              fit: BoxFit.cover,
+              height: double.infinity,
+              width: double.infinity,
+            ),
+            Container(color: Colors.black.withOpacity(0.5)),
+            Center(
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          loc.translate('track_your_luggage'),
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          loc.translate('enter_phone_and_code'),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          loc.translate('sender_receiver_number'),
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: phoneController,
+                          keyboardType: TextInputType.phone,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: _inputDecoration('+243'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return loc.translate('please_enter_phone_number');
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                _isLoading = true;
+                              });
+                              final phone = phoneController.text.trim();
+                              _historyFuture = _fetchHistoryData(phone);
+                              final future = _historyFuture!;
+                              setState(() {});
+                              await future;
+                              setState(() {
+                                _isLoading = false;
+                              });
+                            }
+                          },
+                          child: Text(
+                            loc.translate('quick_check'),
+                            style: const TextStyle(
+                                color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (_isLoading)
+              Container(
+                color: Colors.black45,
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(loc.translate('tracking_history')),
       ),
       backgroundColor: theme.scaffoldBackgroundColor,
-      body: FutureBuilder<List<dynamic>>(
+      body: FutureBuilder<List<Map<String, dynamic>>?>(
         future: _historyFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData) {
+          if (!snapshot.hasData || snapshot.data == null) {
             return const SizedBox.shrink();
           }
-          final historyItems = snapshot.data!.cast<Map<String, dynamic>>();
+          final historyItems = snapshot.data!;
           return ListView.builder(
             itemCount: historyItems.length,
             itemBuilder: (context, index) {
@@ -120,8 +253,17 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                                       ),
                                   ),
                                   children: [
-                                    _buildInfoStripe(context, '${loc.translate('dispatch_date')}:', historyItems[index]['dispatchInfo']['date'], isDark),
-                                    _buildInfoStripe(context, '${loc.translate('status')}:', historyItems[index]['dispatchInfo']['status'], isDark, alt: true),
+                                    _buildInfoStripe(
+                                        context,
+                                        '${loc.translate('dispatch_date')}:',
+                                        historyItems[index]['dispatchInfo']?['date'] ?? '',
+                                        isDark),
+                                    _buildInfoStripe(
+                                        context,
+                                        '${loc.translate('status')}:',
+                                        historyItems[index]['dispatchInfo']?['status'] ?? '',
+                                        isDark,
+                                        alt: true),
                                   ],
                                 ),
                               ExpansionTile(
@@ -133,12 +275,39 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                                   ),
                                 ),
                                 children: [
-                                  _buildInfoStripe(context, '${loc.translate('registered')}:', historyItems[index]['cargoInfo']['registeredDateTime'], isDark),
-                                  _buildInfoStripe(context, '${loc.translate('sender')}:', '${historyItems[index]['cargoInfo']['senderName']} - ${historyItems[index]['cargoInfo']['senderPhone']}', isDark, alt: true),
-                                  _buildInfoStripe(context, '${loc.translate('receiver')}:', '${historyItems[index]['cargoInfo']['receiverName']} - ${historyItems[index]['cargoInfo']['receiverPhone']}', isDark),
-                                  _buildInfoStripe(context, '${loc.translate('quantity')}:', historyItems[index]['cargoInfo']['quantity'], isDark, alt: true),
-                                  _buildInfoStripe(context, '${loc.translate('payment_option')}:', historyItems[index]['cargoInfo']['paymentOption'], isDark),
-                                  _buildInfoStripe(context, '${loc.translate('total_price')}:', historyItems[index]['cargoInfo']['totalPrice'], isDark, alt: true),
+                                  _buildInfoStripe(
+                                      context,
+                                      '${loc.translate('registered')}:',
+                                      historyItems[index]['cargoInfo']?['registeredDateTime'] ?? '',
+                                      isDark),
+                                  _buildInfoStripe(
+                                      context,
+                                      '${loc.translate('sender')}:',
+                                      '${historyItems[index]['cargoInfo']?['senderName'] ?? ''} - ${historyItems[index]['cargoInfo']?['senderPhone'] ?? ''}',
+                                      isDark,
+                                      alt: true),
+                                  _buildInfoStripe(
+                                      context,
+                                      '${loc.translate('receiver')}:',
+                                      '${historyItems[index]['cargoInfo']?['receiverName'] ?? ''} - ${historyItems[index]['cargoInfo']?['receiverPhone'] ?? ''}',
+                                      isDark),
+                                  _buildInfoStripe(
+                                      context,
+                                      '${loc.translate('quantity')}:',
+                                      historyItems[index]['cargoInfo']?['quantity'] ?? '',
+                                      isDark,
+                                      alt: true),
+                                  _buildInfoStripe(
+                                      context,
+                                      '${loc.translate('payment_option')}:',
+                                      historyItems[index]['cargoInfo']?['paymentOption'] ?? '',
+                                      isDark),
+                                  _buildInfoStripe(
+                                      context,
+                                      '${loc.translate('total_price')}:',
+                                      historyItems[index]['cargoInfo']?['totalPrice'] ?? '',
+                                      isDark,
+                                      alt: true),
                                 ],
                               ),
                             ],
@@ -207,6 +376,23 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: Colors.black45),
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.red),
       ),
     );
   }

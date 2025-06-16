@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'status_utils.dart';
 
 import 'localization.dart';
 import 'providers/language_provider.dart';
@@ -12,8 +13,9 @@ class CargoDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final bool isOut = cargo['status'] == 'Out';
-    final Color baseColor = isOut ? Colors.red : Colors.blue;
+    final status = cargo['status']?.toString();
+    final bool isArrived = cargoArrived(status);
+    final Color baseColor = statusColor(status);
     final bool isDark = theme.brightness == Brightness.dark;
     final loc = AppLocalizations(Provider.of<LanguageProvider>(context).languageCode);
     final Map<String, dynamic>? dispatchInfo = cargo['dispatchInfo'];
@@ -110,7 +112,7 @@ class CargoDetailsPage extends StatelessWidget {
                     ],
                   ),
                   child: Text(
-                    loc.translate(isOut ? 'out' : 'store'),
+                    loc.translate(isArrived ? 'out' : 'store'),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

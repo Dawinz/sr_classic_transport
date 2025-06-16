@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'status_utils.dart';
 
 import 'localization.dart';
 import 'providers/language_provider.dart';
@@ -181,16 +182,17 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData || snapshot.data == null) {
-            return const SizedBox.shrink();
+          if (!snapshot.hasData || snapshot.data == null ||
+              (snapshot.data?.isEmpty ?? true)) {
+            return Center(child: Text(loc.translate('no_cargo_found')));
           }
           final historyItems = snapshot.data!;
           return ListView.builder(
             itemCount: historyItems.length,
             itemBuilder: (context, index) {
-              final status = historyItems[index]['status'];
-              final isOut = status == 'Out';
-              final baseColor = isOut ? Colors.red : Colors.blue;
+              final status = historyItems[index]['status']?.toString();
+              final isArrived = cargoArrived(status);
+              final baseColor = statusColor(status);
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
@@ -243,7 +245,7 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                                   ],
                                 ),
                               ),
-                              if (isOut)
+                              if (isArrived)
                                 ExpansionTile(
                                   title: Text(
                                     loc.translate('dispatch_info'),
@@ -334,7 +336,7 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                           ],
                         ),
                         child: Text(
-                          loc.translate(isOut ? 'out' : 'store'),
+                          loc.translate(isArrived ? 'out' : 'store'),
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

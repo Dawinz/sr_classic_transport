@@ -19,6 +19,9 @@ class CargoDetailsPage extends StatelessWidget {
     final Map<String, dynamic>? dispatchInfo = cargo['dispatchInfo'];
     final Map<String, dynamic> cargoInfo = cargo['cargoInfo'];
 
+    final String dispatchDate = dispatchInfo?['date'] ?? '-';
+    final String dispatchStatus = dispatchInfo?['status'] ?? '-';
+
     /// Convenience widget used to present a label/value pair.
     Widget buildRow(String label, String value, {bool alt = false}) {
       final bgColor = isDark
@@ -137,12 +140,10 @@ class CargoDetailsPage extends StatelessWidget {
               ),
             ],
           ),
-          if (dispatchInfo != null) ...[
-            const SizedBox(height: 16),
-            buildSectionHeader(loc.translate('dispatch_info')),
-            buildRow(loc.translate('dispatch_date'), dispatchInfo['date']),
-            buildRow(loc.translate('dispatch_status'), dispatchInfo['status'], alt: true),
-          ],
+          const SizedBox(height: 16),
+          buildSectionHeader(loc.translate('dispatch_info')),
+          buildRow(loc.translate('dispatch_date'), dispatchDate),
+          buildRow(loc.translate('dispatch_status'), dispatchStatus, alt: true),
           const SizedBox(height: 16),
           buildSectionHeader(loc.translate('cargo_info')),
           buildRow(loc.translate('status'), cargo['status']),
@@ -153,11 +154,11 @@ class CargoDetailsPage extends StatelessWidget {
               '${cargoInfo['receiverName']} - ${cargoInfo['receiverPhone']}', alt: true),
           buildRow(loc.translate('quantity'), cargoInfo['quantity']),
           buildRow(loc.translate('payment_option'), cargoInfo['paymentOption'], alt: true),
-          if ((cargoInfo['paidPrice'] ?? '').toString().isNotEmpty)
-            buildRow(loc.translate('paid_price'), cargoInfo['paidPrice']),
-          if ((cargoInfo['toBePaidPrice'] ?? '').toString().isNotEmpty)
-            buildRow(loc.translate('to_be_paid_price'), cargoInfo['toBePaidPrice'], alt: true),
-          buildRow(loc.translate('total_price'), cargoInfo['totalPrice']),
+          buildRow(loc.translate('paid_price'), cargoInfo['paidPrice'] ?? '-'),
+          buildRow(loc.translate('to_be_paid_price'),
+              cargoInfo['toBePaidPrice'] ?? '-',
+              alt: true),
+          buildRow(loc.translate('total_price'), cargoInfo['totalPrice'] ?? '-'),
           const SizedBox(height: 16),
         ],
       ),

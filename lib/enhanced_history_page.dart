@@ -120,6 +120,9 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
         'receiverPhone': _first(["Receiver's phone number", 'Receiver phone']),
         'quantity': info['Quantity'] ?? '',
         'paymentOption': _first(['Payment option', 'Payment Option']),
+        'paidPrice': _first(['Paid price', 'Paid Price']),
+        'toBePaidPrice':
+            _first(['To be paid Price', 'To be paid price', 'To Be Paid Price']),
         'totalPrice': _first(['Total price', 'Total Price']),
       }
     };

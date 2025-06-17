@@ -110,28 +110,25 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
     final dispatchDate = _first(['Dispatch date', 'Dispatch Date']);
     final dispatchStatus = _first(['Dispatch status', 'Dispatch Status']);
 
+    final cargoInfo = {
+      'registeredDateTime':
+          _first(['Registered Date & Time', 'Registered date', 'Registered Date']),
+      'senderName': _first(["Sender's name", 'Sender name']),
+      'receiverName': _first(["Receiver's name", 'Receiver name']),
+      'senderPhone': _first(["Sender's phone number", 'Sender phone']),
+      'receiverPhone': _first(["Receiver's phone number", 'Receiver phone']),
+      'quantity': info['Quantity'] ?? '',
+      'paymentOption': _first(['Payment option', 'Payment Option']),
+      'totalPrice': _first(['Total price', 'Total Price']),
+    };
+
     return {
       'id': _first(['Code', 'ID', 'Ticket number', 'Ticket No', 'Ticket']),
       'date': info['Date'] ?? info['Registered Date'] ?? '',
-      'status': info['Status'] ?? '',
       'route': info['Route'] ?? '',
-      'dispatchInfo': (dispatchDate.isNotEmpty || dispatchStatus.isNotEmpty)
-          ? {'date': dispatchDate, 'status': dispatchStatus}
-          : null,
-      'cargoInfo': {
-        'registeredDateTime':
-            _first(['Registered Date & Time', 'Registered date', 'Registered Date']),
-        'senderName': _first(["Sender's name", 'Sender name']),
-        'receiverName': _first(["Receiver's name", 'Receiver name']),
-        'senderPhone': _first(["Sender's phone number", 'Sender phone']),
-        'receiverPhone': _first(["Receiver's phone number", 'Receiver phone']),
-        'quantity': info['Quantity'] ?? '',
-        'paymentOption': _first(['Payment option', 'Payment Option']),
-        'paidPrice': _first(['Paid price', 'Paid Price']),
-        'toBePaidPrice':
-            _first(['To be paid Price', 'To be paid price', 'To Be Paid Price']),
-        'totalPrice': _first(['Total price', 'Total Price']),
-      },
+      if (dispatchDate.isNotEmpty || dispatchStatus.isNotEmpty)
+        'dispatchInfo': {'date': dispatchDate, 'status': dispatchStatus},
+      'cargoInfo': cargoInfo,
     };
   }
 
@@ -365,12 +362,6 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                                         historyItems[index]['dispatchInfo']?['status'] ?? '',
                                         isDark,
                                         alt: true),
-                                    if ((historyItems[index]['status'] ?? '').toString().isNotEmpty)
-                                      _buildInfoStripe(
-                                          context,
-                                          '${loc.translate('status')}:',
-                                          historyItems[index]['status'] ?? '',
-                                          isDark),
                                   ],
                                 ),
                               ExpansionTile(
@@ -382,11 +373,6 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                                   ),
                                 ),
                                 children: [
-                                  _buildInfoStripe(
-                                      context,
-                                      '${loc.translate('status')}:',
-                                      historyItems[index]['status'] ?? '',
-                                      isDark),
                                   _buildInfoStripe(
                                       context,
                                       '${loc.translate('registered')}:',

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html_parser;
 import 'package:provider/provider.dart';
@@ -44,6 +45,8 @@ class _TrackPageState extends State<TrackPage> {
         Uri.parse('http://217.29.139.44:555/track/ticket_info.php?code=$code');
     try {
       final response = await http.get(url);
+      // Print the raw API response so it can be copied from the console
+      debugPrint('API response: ${response.body}');
       if (response.statusCode != 200) return null;
       final document = html_parser.parse(response.body);
       final Map<String, String> result = {};

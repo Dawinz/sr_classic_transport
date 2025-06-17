@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html_parser;
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -54,7 +55,13 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
         'state': "r_no='$phone'",
       });
       if (response.statusCode != 200) return null;
-      return _parseHistoryHtml(response.body);
+      final cargos = _parseHistoryHtml(response.body);
+      cargos.sort((a, b) {
+        final d1 = _parseDate(a['date'] ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final d2 = _parseDate(b['date'] ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return d2.compareTo(d1);
+      });
+      return cargos;
     } catch (_) {
       return null;
     }
@@ -123,9 +130,27 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
         'paidPrice': _first(['Paid price', 'Paid Price']),
         'toBePaidPrice':
             _first(['To be paid Price', 'To be paid price', 'To Be Paid Price']),
-        'totalPrice': _first(['Total price', 'Total Price']),
-      }
+      'totalPrice': _first(['Total price', 'Total Price']),
     };
+  }
+
+  DateTime? _parseDate(String input) {
+    final patterns = [
+      'yyyy-MM-dd',
+      'dd/MM/yyyy',
+      'MM/dd/yyyy',
+      'dd-MM-yyyy',
+      'dd MMM yyyy',
+      'MMM dd, yyyy',
+    ];
+    for (final p in patterns) {
+      try {
+        return DateFormat(p).parseStrict(input);
+      } catch (_) {
+        continue;
+      }
+    }
+    return DateTime.tryParse(input);
   }
 
   @override
@@ -322,10 +347,10 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                                 ExpansionTile(
                                   title: Text(
                                     loc.translate('dispatch_info'),
-                                      style: theme.textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: isDark ? Colors.white : Colors.black,
-                                      ),
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark ? Colors.white : Colors.black,
+                                    ),
                                   ),
                                   children: [
                                     _buildInfoStripe(
@@ -335,10 +360,16 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                                         isDark),
                                     _buildInfoStripe(
                                         context,
-                                        '${loc.translate('status')}:',
+                                        '${loc.translate('dispatch_status')}:',
                                         historyItems[index]['dispatchInfo']?['status'] ?? '',
                                         isDark,
                                         alt: true),
+                                    if ((historyItems[index]['status'] ?? '').toString().isNotEmpty)
+                                      _buildInfoStripe(
+                                          context,
+                                          '${loc.translate('status')}:',
+                                          historyItems[index]['status'] ?? '',
+                                          isDark),
                                   ],
                                 ),
                               ExpansionTile(
@@ -352,31 +383,50 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                                 children: [
                                   _buildInfoStripe(
                                       context,
+                                      '${loc.translate('status')}:',
+                                      historyItems[index]['status'] ?? '',
+                                      isDark),
+                                  _buildInfoStripe(
+                                      context,
                                       '${loc.translate('registered')}:',
                                       historyItems[index]['cargoInfo']?['registeredDateTime'] ?? '',
-                                      isDark),
+                                      isDark,
+                                      alt: true),
                                   _buildInfoStripe(
                                       context,
                                       '${loc.translate('sender')}:',
                                       '${historyItems[index]['cargoInfo']?['senderName'] ?? ''} - ${historyItems[index]['cargoInfo']?['senderPhone'] ?? ''}',
-                                      isDark,
-                                      alt: true),
+                                      isDark),
                                   _buildInfoStripe(
                                       context,
                                       '${loc.translate('receiver')}:',
                                       '${historyItems[index]['cargoInfo']?['receiverName'] ?? ''} - ${historyItems[index]['cargoInfo']?['receiverPhone'] ?? ''}',
-                                      isDark),
-                                  _buildInfoStripe(
-                                      context,
-                                      '${loc.translate('quantity')}:',
-                                      historyItems[index]['cargoInfo']?['quantity'] ?? '',
                                       isDark,
                                       alt: true),
                                   _buildInfoStripe(
                                       context,
+                                      '${loc.translate('quantity')}:',
+                                      historyItems[index]['cargoInfo']?['quantity'] ?? '',
+                                      isDark),
+                                  _buildInfoStripe(
+                                      context,
                                       '${loc.translate('payment_option')}:',
                                       historyItems[index]['cargoInfo']?['paymentOption'] ?? '',
-                                      isDark),
+                                      isDark,
+                                      alt: true),
+                                  if ((historyItems[index]['cargoInfo']?['paidPrice'] ?? '').toString().isNotEmpty)
+                                    _buildInfoStripe(
+                                        context,
+                                        '${loc.translate('paid_price')}:',
+                                        historyItems[index]['cargoInfo']?['paidPrice'] ?? '',
+                                        isDark),
+                                  if ((historyItems[index]['cargoInfo']?['toBePaidPrice'] ?? '').toString().isNotEmpty)
+                                    _buildInfoStripe(
+                                        context,
+                                        '${loc.translate('to_be_paid_price')}:',
+                                        historyItems[index]['cargoInfo']?['toBePaidPrice'] ?? '',
+                                        isDark,
+                                        alt: (historyItems[index]['cargoInfo']?['paidPrice'] ?? '').toString().isNotEmpty ? true : false),
                                   _buildInfoStripe(
                                       context,
                                       '${loc.translate('total_price')}:',

@@ -130,7 +130,8 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
         'paidPrice': _first(['Paid price', 'Paid Price']),
         'toBePaidPrice':
             _first(['To be paid Price', 'To be paid price', 'To Be Paid Price']),
-      'totalPrice': _first(['Total price', 'Total Price']),
+        'totalPrice': _first(['Total price', 'Total Price']),
+      },
     };
   }
 

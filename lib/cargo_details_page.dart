@@ -125,7 +125,7 @@ class CargoDetailsPage extends StatelessWidget {
           if (isDispatched) ...[
             buildRow(loc.translate('dispatch_date'), dispatchInfo?['date'] ?? '-'),
             buildRow(loc.translate('dispatch_status'), dispatchInfo?['status'] ?? '-', alt: true),
-            Divider(thickness: 1),
+            const Divider(thickness: 1),
           ],
 
           buildRow(loc.translate('registered'), cargoInfo['registeredDateTime']),

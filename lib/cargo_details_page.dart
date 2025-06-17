@@ -153,6 +153,10 @@ class CargoDetailsPage extends StatelessWidget {
               '${cargoInfo['receiverName']} - ${cargoInfo['receiverPhone']}', alt: true),
           buildRow(loc.translate('quantity'), cargoInfo['quantity']),
           buildRow(loc.translate('payment_option'), cargoInfo['paymentOption'], alt: true),
+          if ((cargoInfo['paidPrice'] ?? '').toString().isNotEmpty)
+            buildRow(loc.translate('paid_price'), cargoInfo['paidPrice']),
+          if ((cargoInfo['toBePaidPrice'] ?? '').toString().isNotEmpty)
+            buildRow(loc.translate('to_be_paid_price'), cargoInfo['toBePaidPrice'], alt: true),
           buildRow(loc.translate('total_price'), cargoInfo['totalPrice']),
           const SizedBox(height: 16),
         ],

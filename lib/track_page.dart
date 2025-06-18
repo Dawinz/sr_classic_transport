@@ -103,6 +103,40 @@ class _TrackPageState extends State<TrackPage> {
       'totalPrice': _first(['Total price', 'Total Price']),
     };
 
+    // Create a copy of the info map that excludes keys already mapped above
+    final filteredInfo = Map<String, String>.from(info);
+    const usedKeys = [
+      'Registered Date & Time',
+      'Registered date',
+      "Sender's name",
+      'Sender name',
+      "Receiver's name",
+      'Receiver name',
+      "Sender's phone number",
+      'Sender phone',
+      "Receiver's phone number",
+      'Receiver phone',
+      'Quantity',
+      'Payment option',
+      'Payment Option',
+      'Total price',
+      'Total Price',
+      'Code',
+      'ID',
+      'Ticket number',
+      'Ticket No',
+      'Ticket',
+      'Date',
+      'Route',
+      'Dispatch date',
+      'Dispatch Date',
+      'Dispatch status',
+      'Dispatch Status',
+    ];
+    for (final key in usedKeys) {
+      filteredInfo.remove(key);
+    }
+
     return {
       'id': _first(['Code', 'ID', 'Ticket number', 'Ticket No', 'Ticket']),
       'date': info['Date'] ?? '',
@@ -110,7 +144,7 @@ class _TrackPageState extends State<TrackPage> {
       if (dispatchDate.isNotEmpty || dispatchStatus.isNotEmpty)
         'dispatchInfo': {'date': dispatchDate, 'status': dispatchStatus},
       'cargoInfo': cargoInfo,
-      'allDetails': info,
+      'allDetails': filteredInfo,
     };
   }
 

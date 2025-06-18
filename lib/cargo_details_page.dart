@@ -20,6 +20,10 @@ class CargoDetailsPage extends StatelessWidget {
     final Map<String, dynamic> allDetails =
         (cargo['allDetails'] as Map<String, dynamic>?) ?? {};
 
+    final String date = cargo['date'] ?? allDetails['Date'] ?? '-';
+    final String id = cargo['id'] ?? allDetails['ID'] ?? '-';
+    final String route = cargo['route'] ?? allDetails['Route'] ?? '-';
+
     final Color primaryColor = isDispatched ? Colors.red[600]! : Colors.blue[600]!;
 
     Widget buildRow(String label, String value, {bool alt = false}) {
@@ -72,18 +76,18 @@ class CargoDetailsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          cargo['date'],
+                          date,
                           style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          cargo['id'],
+                          id,
                           style: theme.textTheme.titleLarge?.copyWith(
                               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          cargo['route'],
+                          route,
                           style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                         ),
                       ],

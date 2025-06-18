@@ -63,7 +63,9 @@ class CargoDetailsPage extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  Container(height: 40, color: theme.scaffoldBackgroundColor),
+                  // Reserve space for the status badge while keeping the
+                  // header color consistent.
+                  Container(height: 40, color: primaryColor),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 24),

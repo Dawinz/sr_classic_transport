@@ -12,7 +12,8 @@ class CargoDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final loc = AppLocalizations(Provider.of<LanguageProvider>(context).languageCode);
+    final loc =
+    AppLocalizations(Provider.of<LanguageProvider>(context).languageCode);
 
     final bool isDispatched = cargo['dispatchInfo'] != null;
     final Map<String, dynamic>? dispatchInfo = cargo['dispatchInfo'];
@@ -20,11 +21,8 @@ class CargoDetailsPage extends StatelessWidget {
     final Map<String, dynamic> allDetails =
         (cargo['allDetails'] as Map<String, dynamic>?) ?? {};
 
-    final String date = cargo['date'] ?? allDetails['Date'] ?? '-';
-    final String id = cargo['id'] ?? allDetails['ID'] ?? '-';
-    final String route = cargo['route'] ?? allDetails['Route'] ?? '-';
-
-    final Color primaryColor = isDispatched ? Colors.red[600]! : Colors.blue[600]!;
+    final Color primaryColor =
+    isDispatched ? Colors.red[600]! : Colors.blue[600]!;
 
     Widget buildRow(String label, String value, {bool alt = false}) {
       final bgColor = isDark
@@ -39,7 +37,8 @@ class CargoDetailsPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label,
-                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+                style: theme.textTheme.bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.bold)),
             Flexible(
               child: Text(
                 value,
@@ -64,10 +63,7 @@ class CargoDetailsPage extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  Container(
-                    height: 40,
-                    color: theme.scaffoldBackgroundColor,
-                  ),
+                  Container(height: 40, color: theme.scaffoldBackgroundColor),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 24),
@@ -76,19 +72,24 @@ class CargoDetailsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          date,
-                          style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
+                          cargo['date'] ?? '',
+                          style:
+                          theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          id,
+                          cargo['id'] ?? '',
                           style: theme.textTheme.titleLarge?.copyWith(
-                              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          route,
-                          style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
+                          cargo['route'] ?? '',
+                          style:
+                          theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                         ),
                       ],
                     ),
@@ -129,25 +130,55 @@ class CargoDetailsPage extends StatelessWidget {
           const SizedBox(height: 16),
 
           if (isDispatched) ...[
-            buildRow(loc.translate('dispatch_date'), dispatchInfo?['date'] ?? '-'),
-            buildRow(loc.translate('dispatch_status'), dispatchInfo?['status'] ?? '-', alt: true),
+            buildRow(
+              loc.translate('dispatch_date'),
+              dispatchInfo?['date'] ?? '-',
+            ),
+            buildRow(
+              loc.translate('dispatch_status'),
+              dispatchInfo?['status'] ?? '-',
+              alt: true,
+            ),
             const Divider(thickness: 1),
           ],
 
-          buildRow(loc.translate('registered'), cargoInfo['registeredDateTime']),
-          buildRow(loc.translate('sender'),
-              '${cargoInfo['senderName']} - ${cargoInfo['senderPhone']}', alt: true),
-          buildRow(loc.translate('receiver'),
-              '${cargoInfo['receiverName']} - ${cargoInfo['receiverPhone']}'),
-          buildRow(loc.translate('quantity'), cargoInfo['quantity'], alt: true),
-          buildRow(loc.translate('payment_option'), cargoInfo['paymentOption']),
-          buildRow(loc.translate('total_price'), cargoInfo['totalPrice'] ?? '-', alt: true),
+          buildRow(
+            loc.translate('registered'),
+            cargoInfo['registeredDateTime'] ?? '-',
+          ),
+          buildRow(
+            loc.translate('sender'),
+            '${cargoInfo['senderName'] ?? ''} - ${cargoInfo['senderPhone'] ?? ''}',
+            alt: true,
+          ),
+          buildRow(
+            loc.translate('receiver'),
+            '${cargoInfo['receiverName'] ?? ''} - ${cargoInfo['receiverPhone'] ?? ''}',
+          ),
+          buildRow(
+            loc.translate('quantity'),
+            cargoInfo['quantity'] ?? '-',
+            alt: true,
+          ),
+          buildRow(
+            loc.translate('payment_option'),
+            cargoInfo['paymentOption'] ?? '-',
+          ),
+          buildRow(
+            loc.translate('total_price'),
+            cargoInfo['totalPrice'] ?? '-',
+            alt: true,
+          ),
 
           if (allDetails.isNotEmpty) ...[
             const Divider(thickness: 1),
             ...List<Widget>.generate(allDetails.length, (index) {
               final entry = allDetails.entries.elementAt(index);
-              return buildRow(entry.key, entry.value.toString(), alt: index.isOdd);
+              return buildRow(
+                entry.key,
+                entry.value.toString(),
+                alt: index.isOdd,
+              );
             }),
           ],
 

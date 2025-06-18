@@ -91,6 +91,13 @@ class _TrackPageState extends State<TrackPage> {
     final dispatchDate = _first(['Dispatch date', 'Dispatch Date']);
     final dispatchStatus = _first(['Dispatch status', 'Dispatch Status']);
 
+    String status = info['Status'] ?? '';
+    if (status.isEmpty) {
+      status = (dispatchDate.isNotEmpty || dispatchStatus.isNotEmpty)
+          ? 'Out'
+          : 'Store';
+    }
+
     final cargoInfo = {
       'registeredDateTime':
           _first(['Registered Date & Time', 'Registered date']),
@@ -121,6 +128,7 @@ class _TrackPageState extends State<TrackPage> {
       'Payment Option',
       'Total price',
       'Total Price',
+      'Status',
       'Code',
       'ID',
       'Ticket number',
@@ -140,6 +148,7 @@ class _TrackPageState extends State<TrackPage> {
     return {
       'id': _first(['Code', 'ID', 'Ticket number', 'Ticket No', 'Ticket']),
       'date': info['Date'] ?? '',
+      'status': status,
       'route': info['Route'] ?? '',
       if (dispatchDate.isNotEmpty || dispatchStatus.isNotEmpty)
         'dispatchInfo': {'date': dispatchDate, 'status': dispatchStatus},

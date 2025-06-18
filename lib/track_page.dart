@@ -101,6 +101,7 @@ class _TrackPageState extends State<TrackPage> {
       if (dispatchDate.isNotEmpty || dispatchStatus.isNotEmpty)
         'dispatchInfo': {'date': dispatchDate, 'status': dispatchStatus},
       'cargoInfo': cargoInfo,
+      'allDetails': info,
     };
   }
 

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'localization.dart';
 import 'providers/language_provider.dart';
+import 'config.dart';
 
 /// Displays a list of previously tracked shipments fetched from the backend
 /// service using the receiver's phone number.
@@ -43,7 +44,7 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
   }
 
   Future<List<Map<String, dynamic>>?> _fetchHistoryData(String phone) async {
-    final url = Uri.parse('http://217.29.139.44:555/track/data.php');
+    final url = Uri.parse('${AppConfig.apiBaseUrl}track/data.php');
     try {
       final response = await http.post(url, headers: {
         'Content-Type': 'application/x-www-form-urlencoded'

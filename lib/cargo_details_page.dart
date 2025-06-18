@@ -13,16 +13,14 @@ class CargoDetailsPage extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final loc =
-    AppLocalizations(Provider.of<LanguageProvider>(context).languageCode);
+        AppLocalizations(Provider.of<LanguageProvider>(context).languageCode);
 
-    final bool isDispatched = cargo['dispatchInfo'] != null;
+    final bool isOut = cargo['status'] == 'Out';
     final Map<String, dynamic>? dispatchInfo = cargo['dispatchInfo'];
     final Map<String, dynamic> cargoInfo = cargo['cargoInfo'];
-    final Map<String, dynamic> allDetails =
-        (cargo['allDetails'] as Map<String, dynamic>?) ?? {};
+    final bool hasDispatch = dispatchInfo != null;
 
-    final Color primaryColor =
-    isDispatched ? Colors.red[600]! : Colors.blue[600]!;
+    final Color baseColor = isOut ? Colors.red : Colors.blue;
 
     Widget buildRow(String label, String value, {bool alt = false}) {
       final bgColor = isDark
@@ -31,7 +29,7 @@ class CargoDetailsPage extends StatelessWidget {
 
       return Container(
         color: bgColor,
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         width: double.infinity,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -54,7 +52,7 @@ class CargoDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(loc.translate('cargo_details')),
-        backgroundColor: primaryColor,
+        backgroundColor: baseColor,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: ListView(
@@ -65,11 +63,11 @@ class CargoDetailsPage extends StatelessWidget {
                 children: [
                   // Reserve space for the status badge while keeping the
                   // header color consistent.
-                  Container(height: 40, color: primaryColor),
+                  Container(height: 40, color: theme.scaffoldBackgroundColor),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 24),
-                    color: primaryColor,
+                    color: baseColor,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -106,7 +104,7 @@ class CargoDetailsPage extends StatelessWidget {
                   padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: primaryColor,
+                    color: baseColor,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.3),
@@ -117,7 +115,7 @@ class CargoDetailsPage extends StatelessWidget {
                     ],
                   ),
                   child: Text(
-                    loc.translate(isDispatched ? 'out' : 'store'),
+                    loc.translate(isOut ? 'out' : 'store'),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -131,7 +129,7 @@ class CargoDetailsPage extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          if (isDispatched) ...[
+          if (hasDispatch) ...[
             buildRow(
               loc.translate('dispatch_date'),
               dispatchInfo?['date'] ?? '-',
@@ -172,17 +170,6 @@ class CargoDetailsPage extends StatelessWidget {
             alt: true,
           ),
 
-          if (allDetails.isNotEmpty) ...[
-            const Divider(thickness: 1),
-            ...List<Widget>.generate(allDetails.length, (index) {
-              final entry = allDetails.entries.elementAt(index);
-              return buildRow(
-                entry.key,
-                entry.value.toString(),
-                alt: index.isOdd,
-              );
-            }),
-          ],
 
           const SizedBox(height: 24),
         ],

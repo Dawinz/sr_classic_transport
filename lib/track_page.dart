@@ -60,6 +60,14 @@ class _TrackPageState extends State<TrackPage> {
             value = value.substring(1).trim();
           }
           result[key] = value;
+        } else {
+          final text = li.text;
+          final idx = text.indexOf(':');
+          if (idx != -1) {
+            final key = text.substring(0, idx).trim();
+            final value = text.substring(idx + 1).trim();
+            result[key] = value;
+          }
         }
       }
       return result.isEmpty ? null : result;

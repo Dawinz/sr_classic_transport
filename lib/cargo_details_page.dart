@@ -17,6 +17,8 @@ class CargoDetailsPage extends StatelessWidget {
     final bool isDispatched = cargo['dispatchInfo'] != null;
     final Map<String, dynamic>? dispatchInfo = cargo['dispatchInfo'];
     final Map<String, dynamic> cargoInfo = cargo['cargoInfo'];
+    final Map<String, dynamic> allDetails =
+        (cargo['allDetails'] as Map<String, dynamic>?) ?? {};
 
     final Color primaryColor = isDispatched ? Colors.red[600]! : Colors.blue[600]!;
 
@@ -136,6 +138,14 @@ class CargoDetailsPage extends StatelessWidget {
           buildRow(loc.translate('quantity'), cargoInfo['quantity'], alt: true),
           buildRow(loc.translate('payment_option'), cargoInfo['paymentOption']),
           buildRow(loc.translate('total_price'), cargoInfo['totalPrice'] ?? '-', alt: true),
+
+          if (allDetails.isNotEmpty) ...[
+            const Divider(thickness: 1),
+            ...List<Widget>.generate(allDetails.length, (index) {
+              final entry = allDetails.entries.elementAt(index);
+              return buildRow(entry.key, entry.value.toString(), alt: index.isOdd);
+            }),
+          ],
 
           const SizedBox(height: 24),
         ],

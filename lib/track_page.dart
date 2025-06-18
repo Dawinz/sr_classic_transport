@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'cargo_details_page.dart';
 import 'providers/language_provider.dart';
 import 'localization.dart';
+import 'config.dart';
 
 class TrackPage extends StatefulWidget {
   const TrackPage({super.key});
@@ -42,7 +43,7 @@ class _TrackPageState extends State<TrackPage> {
   /// extracted values keyed by their labels.
   Future<Map<String, String>?> _fetchTrackingData(String code) async {
     final url =
-        Uri.parse('http://217.29.139.44:555/track/ticket_info.php?code=$code');
+        Uri.parse('${AppConfig.apiBaseUrl}track/ticket_info.php?code=$code');
     try {
       final response = await http.get(url);
       // Print the raw API response so it can be copied from the console

@@ -44,6 +44,7 @@ flutter:
     - assets/images/zambia_lusaka.png
     - assets/images/burundi_bujumbura.png
     - assets/images/app_icon.png
+    - assets/data/shipments.json
 
 flutter_launcher_icons:
   android: true

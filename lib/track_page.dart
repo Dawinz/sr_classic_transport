@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as html_parser;
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'cargo_details_page.dart';
 import 'providers/language_provider.dart';
 import 'localization.dart';
-import 'config.dart';
 
 class TrackPage extends StatefulWidget {
   const TrackPage({super.key});
@@ -39,122 +37,26 @@ class _TrackPageState extends State<TrackPage> {
     }
   }
 
-  /// Fetches tracking information from the remote API and returns a map of
-  /// extracted values keyed by their labels.
-  Future<Map<String, String>?> _fetchTrackingData(String code) async {
-    final url =
-        Uri.parse('${AppConfig.apiBaseUrl}track/ticket_info.php?code=$code');
-    try {
-      final response = await http.get(url);
-      // Print the raw API response so it can be copied from the console
-      debugPrint('API response: ${response.body}');
-      if (response.statusCode != 200) return null;
-      final document = html_parser.parse(response.body);
-      final Map<String, String> result = {};
-      for (final li in document.querySelectorAll('li')) {
-        final spans = li.querySelectorAll('span');
-        if (spans.length >= 2) {
-          var key = spans[0].text.trim();
-          var value = spans[1].text.replaceAll('\u00a0', ' ').trim();
-          if (value.startsWith('-')) {
-            value = value.substring(1).trim();
-          }
-          result[key] = value;
-        } else {
-          final text = li.text;
-          final idx = text.indexOf(':');
-          if (idx != -1) {
-            final key = text.substring(0, idx).trim();
-            final value = text.substring(idx + 1).trim();
-            result[key] = value;
-          }
-        }
-      }
-      return result.isEmpty ? null : result;
-    } catch (_) {
-      return null;
-    }
+  /// Loads shipment data from the bundled JSON file if not already loaded.
+  List<Map<String, dynamic>>? _shipments;
+
+  Future<void> _loadShipments() async {
+    if (_shipments != null) return;
+    final data = await rootBundle.loadString('assets/data/shipments.json');
+    _shipments =
+        (json.decode(data) as List).cast<Map<String, dynamic>>();
   }
 
-  /// Converts the raw info map from [_fetchTrackingData] into the structure
-  /// expected by [CargoDetailsPage]. This attempts to map various possible
-  /// keys returned by the backend to the fields used previously when the data
-  /// came from `shipments.json`.
-  Map<String, dynamic> _convertToCargo(Map<String, String> info) {
-    String _first(List<String> keys) {
-      for (final k in keys) {
-        if (info.containsKey(k)) return info[k]!;
+  /// Finds a shipment by its [code]. Returns `null` if not found.
+  Future<Map<String, dynamic>?> _findShipment(String code) async {
+    await _loadShipments();
+    for (final shipment in _shipments!) {
+      final id = shipment['id'] as String?;
+      if (id != null && id.toLowerCase() == code.toLowerCase()) {
+        return shipment;
       }
-      return '';
     }
-
-    final dispatchDate = _first(['Dispatch date', 'Dispatch Date']);
-    final dispatchStatus = _first(['Dispatch status', 'Dispatch Status']);
-
-    String status = info['Status'] ?? '';
-    if (status.isEmpty) {
-      status = (dispatchDate.isNotEmpty || dispatchStatus.isNotEmpty)
-          ? 'Out'
-          : 'Store';
-    }
-
-    final cargoInfo = {
-      'registeredDateTime':
-          _first(['Registered Date & Time', 'Registered date']),
-      'senderName': _first(["Sender's name", 'Sender name']),
-      'receiverName': _first(["Receiver's name", 'Receiver name']),
-      'senderPhone': _first(["Sender's phone number", 'Sender phone']),
-      'receiverPhone': _first(["Receiver's phone number", 'Receiver phone']),
-      'quantity': info['Quantity'] ?? '',
-      'paymentOption': _first(['Payment option', 'Payment Option']),
-      'totalPrice': _first(['Total price', 'Total Price']),
-    };
-
-    // Create a copy of the info map that excludes keys already mapped above
-    final filteredInfo = Map<String, String>.from(info);
-    const usedKeys = [
-      'Registered Date & Time',
-      'Registered date',
-      "Sender's name",
-      'Sender name',
-      "Receiver's name",
-      'Receiver name',
-      "Sender's phone number",
-      'Sender phone',
-      "Receiver's phone number",
-      'Receiver phone',
-      'Quantity',
-      'Payment option',
-      'Payment Option',
-      'Total price',
-      'Total Price',
-      'Status',
-      'Code',
-      'ID',
-      'Ticket number',
-      'Ticket No',
-      'Ticket',
-      'Date',
-      'Route',
-      'Dispatch date',
-      'Dispatch Date',
-      'Dispatch status',
-      'Dispatch Status',
-    ];
-    for (final key in usedKeys) {
-      filteredInfo.remove(key);
-    }
-
-    return {
-      'id': _first(['Code', 'ID', 'Ticket number', 'Ticket No', 'Ticket']),
-      'date': info['Date'] ?? '',
-      'status': status,
-      'route': info['Route'] ?? '',
-      if (dispatchDate.isNotEmpty || dispatchStatus.isNotEmpty)
-        'dispatchInfo': {'date': dispatchDate, 'status': dispatchStatus},
-      'cargoInfo': cargoInfo,
-      'allDetails': filteredInfo,
-    };
+    return null;
   }
 
 
@@ -318,17 +220,17 @@ class _TrackPageState extends State<TrackPage> {
                               _isLoading = true;
                             });
                             final code = codeController.text.trim();
-                            final data = await _fetchTrackingData(code);
+                            final data = await _findShipment(code);
                             setState(() {
                               _isLoading = false;
                             });
 
                             if (data != null) {
-                              final senderPhone = data["Sender's phone number"] ?? '';
-                              final receiverPhone = data["Receiver's phone number"] ?? '';
+                              final senderPhone = data['cargoInfo']['senderPhone'] ?? '';
+                              final receiverPhone = data['cargoInfo']['receiverPhone'] ?? '';
                               if (senderPhone.contains(phone) ||
                                   receiverPhone.contains(phone)) {
-                                final cargo = _convertToCargo(data);
+                                final cargo = data;
                                 Navigator.of(context).push(
                                   PageRouteBuilder(
                                     pageBuilder: (_, animation, __) {

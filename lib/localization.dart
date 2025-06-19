@@ -66,6 +66,14 @@ class AppLocalizations {
       'total_price': 'Total Price',
       'tracking_history': 'Tracking History',
       'status': 'Status',
+      'introduction': 'INTRODUCTION',
+      'price_list': 'PRICE LIST',
+      'route': 'Route',
+      'price': 'Price',
+      'about_us_content':
+          'SR Classic coach is a Tanzanian based company which deals with road transportation of passengers and cargo across East and Central Africa. '
+          'SR Classic coach operates in 7 countries including Tanzania, Kenya, Uganda, Burundi, Zambia, Zimbabwe and Democratic Republic of Congo with over 150 fleet of buses and over 1000 staff and operators.\n\n'
+          'The company provides service of transporting people and goods from Dar es Salaam to Lubumbashi, Lusaka, Harare, Kampala, Bujumbura, and more route connections in Kenya, Uganda and DRC Congo to local cities and neighboring countries.',
     },
     'sw': {
       'select_language': 'Chagua Lugha',
@@ -129,6 +137,14 @@ class AppLocalizations {
       'total_price': 'Jumla ya Bei',
       'tracking_history': 'Historia ya Ufuatiliaji',
       'status': 'Hali',
+      'introduction': 'UTANGULIZI',
+      'price_list': 'ORODHA YA BEI',
+      'route': 'Njia',
+      'price': 'Bei',
+      'about_us_content':
+          'SR Classic coach ni kampuni ya Tanzania inayojishughulisha na usafiri wa barabara wa abiria na mizigo kote Afrika Mashariki na Kati. '
+          'SR Classic coach inafanya kazi katika nchi 7 zikiwemo Tanzania, Kenya, Uganda, Burundi, Zambia, Zimbabwe na Jamhuri ya Kidemokrasia ya Kongo ikiwa na zaidi ya mabasi 150 na wafanyakazi zaidi ya 1000.\n\n'
+          'Kampuni hutoa huduma ya kusafirisha watu na mizigo kutoka Dar es Salaam kwenda Lubumbashi, Lusaka, Harare, Kampala, Bujumbura, na njia nyingine katika Kenya, Uganda na DRC Congo kuelekea miji ya ndani na nchi jirani.',
     },
     'fr': {
       'select_language': 'Choisir la langue',
@@ -192,6 +208,14 @@ class AppLocalizations {
       'total_price': 'Prix total',
       'tracking_history': 'Historique de suivi',
       'status': 'Statut',
+      'introduction': 'INTRODUCTION',
+      'price_list': 'LISTE DES PRIX',
+      'route': 'Itinéraire',
+      'price': 'Prix',
+      'about_us_content':
+          'SR Classic coach est une société tanzanienne qui s\'occupe du transport routier de passagers et de marchandises à travers l\'Afrique de l\'Est et centrale. '
+          'SR Classic coach opère dans 7 pays dont la Tanzanie, le Kenya, l\'Ouganda, le Burundi, la Zambie, le Zimbabwe et la République démocratique du Congo avec une flotte de plus de 150 bus et plus de 1000 employés et opérateurs.\n\n'
+          'La société assure le transport de personnes et de marchandises de Dar es Salaam vers Lubumbashi, Lusaka, Harare, Kampala, Bujumbura, ainsi que d\'autres liaisons routières au Kenya, en Ouganda et en RDC vers les villes locales et les pays voisins.',
     },
   };
 

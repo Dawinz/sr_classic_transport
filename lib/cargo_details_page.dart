@@ -20,7 +20,7 @@ class CargoDetailsPage extends StatelessWidget {
     final Map<String, dynamic> cargoInfo = cargo['cargoInfo'];
     final bool hasDispatch = dispatchInfo != null;
 
-    final Color baseColor = isOut ? Colors.red : Colors.blue;
+    final Color baseColor = (isOut || hasDispatch) ? Colors.red : Colors.blue;
 
     Widget buildRow(String label, String value, {bool alt = false}) {
       final bgColor = isDark
@@ -115,7 +115,13 @@ class CargoDetailsPage extends StatelessWidget {
                     ],
                   ),
                   child: Text(
-                    loc.translate(isOut ? 'out' : 'store'),
+                    (() {
+                      final status =
+                          (dispatchInfo?['status'] ?? '').toString().trim();
+                      return status.isNotEmpty
+                          ? status
+                          : loc.translate(isOut ? 'out' : 'store');
+                    })(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -136,7 +142,9 @@ class CargoDetailsPage extends StatelessWidget {
             ),
             buildRow(
               loc.translate('dispatch_status'),
-              dispatchInfo?['status'] ?? '-',
+              (dispatchInfo?['status'] ?? '').toString().trim().isNotEmpty
+                  ? (dispatchInfo?['status'] ?? '').toString().trim()
+                  : '-',
               alt: true,
             ),
             const Divider(thickness: 1),

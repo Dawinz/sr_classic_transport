@@ -290,6 +290,10 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
             itemBuilder: (context, index) {
               final isDispatched = historyItems[index]['dispatchInfo'] != null;
               final baseColor = isDispatched ? Colors.red : Colors.blue;
+              final badgeStatus =
+                  (historyItems[index]['dispatchInfo']?['status'] ?? '')
+                      .toString()
+                      .trim();
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
@@ -447,7 +451,9 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
                           ],
                         ),
                         child: Text(
-                          loc.translate(isDispatched ? 'out' : 'store'),
+                          badgeStatus.isNotEmpty
+                              ? badgeStatus
+                              : loc.translate(isDispatched ? 'out' : 'store'),
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

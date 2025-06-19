@@ -19,29 +19,27 @@ class AboutUsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'INTRODUCTION',
+              loc.translate('introduction'),
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: Colors.redAccent,
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              "SR Classic coach is a Tanzanian based company which deals with road transportation of passengers and cargo across East and Central Africa. "
-                  "SR Classic coach operates in 7 countries including Tanzania, Kenya, Uganda, Burundi, Zambia, Zimbabwe and Democratic Republic of Congo with over 150 fleet of buses and over 1000 staff and operators.\n\n"
-                  "The company provides service of transporting people and goods from Dar es Salaam to Lubumbashi, Lusaka, Harare, Kampala, Bujumbura, and more route connections in Kenya, Uganda and DRC Congo to local cities and neighboring countries.",
+            Text(
+              loc.translate('about_us_content'),
               textAlign: TextAlign.justify,
             ),
             const SizedBox(height: 30),
             Text(
-              'PRICE LIST',
+              loc.translate('price_list'),
               style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            _buildPriceTable(),
+            _buildPriceTable(loc),
             const SizedBox(height: 30),
             Text(
-              'CONTACT US',
+              loc.translate('contact_us'),
               style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
@@ -52,7 +50,7 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceTable() {
+  Widget _buildPriceTable(AppLocalizations loc) {
     final rows = [
       ['JOHANNESBURG - LUBUMBASHI', 'R 1800'],
       ['JOHANNESBURG - LUSAKA', 'R 900'],
@@ -74,16 +72,26 @@ class AboutUsPage extends StatelessWidget {
       children: [
         TableRow(
           decoration: const BoxDecoration(color: Colors.redAccent),
-          children: const [
+          children: [
             Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Route',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                loc.translate('route'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Price',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                loc.translate('price'),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),

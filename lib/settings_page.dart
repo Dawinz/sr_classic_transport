@@ -183,7 +183,7 @@ class SettingsPage extends StatelessWidget {
               icon: Icons.share_outlined,
               title: loc.translate('share_app'),
               onTap: () {
-                Share.share('Check out SR Classic Transport App!');
+                Share.share('Check out Sr Classic Coach App!');
               },
             ),
           ],

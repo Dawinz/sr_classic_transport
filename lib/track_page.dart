@@ -239,7 +239,7 @@ class _TrackPageState extends State<TrackPage> {
                                           begin: const Offset(1, 0),
                                           end: Offset.zero,
                                         ).chain(CurveTween(curve: Curves.ease)).animate(animation),
-                                        child: CargoDetailsPage(cargo: cargo),
+                                        child: CargoDetailsPage(cargoData: cargo),
                                       );
                                     },
                                     transitionDuration: const Duration(milliseconds: 300),

@@ -17,7 +17,6 @@ dependencies:
   share_plus: ^11.0.0
   url_launcher: ^6.2.1
   http: ^0.13.6
-  html: ^0.15.4
   intl: ^0.20.2
 
 
@@ -50,8 +49,10 @@ flutter_launcher_icons:
   android: true
   ios: true
   linux: true
-  macos: true
+  macos:
+    generate: true
   web:
     generate: true
-  windows: true
+  windows:
+    generate: true
   image_path: assets/images/app_icon.png

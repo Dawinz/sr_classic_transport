@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "co.srclassic.co"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -30,6 +30,9 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug") // temporary for release build testing
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 }

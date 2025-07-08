@@ -5,19 +5,19 @@ import 'localization.dart';
 import 'providers/language_provider.dart';
 
 class CargoDetailsPage extends StatelessWidget {
-  final Map<String, dynamic> cargo;
+  final Map<String, dynamic> cargoData;
 
-  const CargoDetailsPage({super.key, required this.cargo});
+  const CargoDetailsPage({super.key, required this.cargoData});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final bool isOut = cargo['status'] == 'Out';
+    final bool isOut = cargoData['status'] == 'Out';
     final Color baseColor = isOut ? Colors.red : Colors.blue;
     final bool isDark = theme.brightness == Brightness.dark;
     final loc = AppLocalizations(Provider.of<LanguageProvider>(context).languageCode);
-    final Map<String, dynamic>? dispatchInfo = cargo['dispatchInfo'];
-    final Map<String, dynamic> cargoInfo = cargo['cargoInfo'];
+    final Map<String, dynamic>? dispatchInfo = cargoData['dispatchInfo'];
+    final Map<String, dynamic> cargoInfo = cargoData['cargoInfo'];
 
     /// Convenience widget used to present a label/value pair.
     Widget buildRow(String label, String value, {bool alt = false}) {
@@ -70,19 +70,19 @@ class CargoDetailsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          cargo['date'],
+                          cargoData['date'],
                           style: theme.textTheme.bodyLarge
                               ?.copyWith(color: Colors.white),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          cargo['id'],
+                          cargoData['id'],
                           style: theme.textTheme.titleLarge?.copyWith(
                               color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          cargo['route'],
+                          cargoData['route'],
                           style: theme.textTheme.bodyLarge
                               ?.copyWith(color: Colors.white),
                         ),

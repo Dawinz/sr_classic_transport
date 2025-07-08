@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'localization.dart';
 import 'providers/language_provider.dart';
+import 'cargo_details_page.dart';
 
 /// Displays a list of previously tracked shipments from a bundled JSON file.
 
@@ -29,6 +30,15 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
   Future<List<dynamic>> _loadHistory() async {
     final data = await rootBundle.loadString('assets/data/shipments.json');
     return json.decode(data) as List<dynamic>;
+  }
+
+  void _showCargoDetails(BuildContext context, Map<String, dynamic> cargoData) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CargoDetailsPage(cargoData: cargoData),
+      ),
+    );
   }
 
   @override
@@ -60,153 +70,192 @@ class _EnhancedHistoryPageState extends State<EnhancedHistoryPage> {
               final baseColor = isOut ? Colors.red : Colors.blue;
 
               return Card(
-                margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 color: theme.cardColor,
                 elevation: 4,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                child: Stack(
-                  children: [
-                    Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: theme.scaffoldBackgroundColor,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(12),
-                              topRight: Radius.circular(12),
+                child: InkWell(
+                  onTap: () => _showCargoDetails(context, historyItems[index]),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: theme.scaffoldBackgroundColor,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                topRight: Radius.circular(12),
+                              ),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 0),
-                          child: Column(
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(20),
-                                color: baseColor,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      historyItems[index]['date'],
-                                      textAlign: TextAlign.center,
-                                      style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      historyItems[index]['id'],
-                                      textAlign: TextAlign.center,
-                                      style: theme.textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      historyItems[index]['route'],
-                                      textAlign: TextAlign.center,
-                                      style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (isOut)
-                                ExpansionTile(
-                                  title: Text(
-                                    loc.translate('dispatch_info'),
-                                      style: theme.textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: isDark ? Colors.white : Colors.black,
+                          Container(
+                            margin: const EdgeInsets.only(top: 0),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(20),
+                                  color: baseColor,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        historyItems[index]['date'],
+                                        textAlign: TextAlign.center,
+                                        style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
                                       ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        historyItems[index]['id'],
+                                        textAlign: TextAlign.center,
+                                        style: theme.textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        historyItems[index]['route'],
+                                        textAlign: TextAlign.center,
+                                        style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
+                                      ),
+                                    ],
                                   ),
-                                  children: [
-                                    _buildInfoStripe(context, '${loc.translate('dispatch_date')}:', historyItems[index]['dispatchInfo']['date'], isDark),
-                                    _buildInfoStripe(context, '${loc.translate('status')}:', historyItems[index]['dispatchInfo']['status'], isDark, alt: true),
-                                  ],
                                 ),
-                              ExpansionTile(
-                                title: Text(
-                                  loc.translate('cargo_info'),
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark ? Colors.white : Colors.black,
+                                // Quick info section
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            '${loc.translate('sender')}:',
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: isDark ? Colors.grey[300] : Colors.grey[700],
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: Text(
+                                              historyItems[index]['cargoInfo']['senderName'],
+                                              style: theme.textTheme.bodyMedium,
+                                              textAlign: TextAlign.right,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            '${loc.translate('receiver')}:',
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: isDark ? Colors.grey[300] : Colors.grey[700],
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: Text(
+                                              historyItems[index]['cargoInfo']['receiverName'],
+                                              style: theme.textTheme.bodyMedium,
+                                              textAlign: TextAlign.right,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            '${loc.translate('total_price')}:',
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: isDark ? Colors.grey[300] : Colors.grey[700],
+                                            ),
+                                          ),
+                                          Text(
+                                            historyItems[index]['cargoInfo']['totalPrice'],
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: baseColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      if (isOut) ...[
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              '${loc.translate('dispatch_status')}:',
+                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: isDark ? Colors.grey[300] : Colors.grey[700],
+                                              ),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                historyItems[index]['dispatchInfo']['status'],
+                                                style: theme.textTheme.bodyMedium?.copyWith(
+                                                  color: Colors.orange,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                textAlign: TextAlign.right,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ],
                                   ),
                                 ),
-                                children: [
-                                  _buildInfoStripe(context, '${loc.translate('registered')}:', historyItems[index]['cargoInfo']['registeredDateTime'], isDark),
-                                  _buildInfoStripe(context, '${loc.translate('sender')}:', '${historyItems[index]['cargoInfo']['senderName']} - ${historyItems[index]['cargoInfo']['senderPhone']}', isDark, alt: true),
-                                  _buildInfoStripe(context, '${loc.translate('receiver')}:', '${historyItems[index]['cargoInfo']['receiverName']} - ${historyItems[index]['cargoInfo']['receiverPhone']}', isDark),
-                                  _buildInfoStripe(context, '${loc.translate('quantity')}:', historyItems[index]['cargoInfo']['quantity'], isDark, alt: true),
-                                  _buildInfoStripe(context, '${loc.translate('payment_option')}:', historyItems[index]['cargoInfo']['paymentOption'], isDark),
-                                  _buildInfoStripe(context, '${loc.translate('total_price')}:', historyItems[index]['cargoInfo']['totalPrice'], isDark, alt: true),
-                                ],
+
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        child: Container(
+                          margin: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(22),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: baseColor,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.4),
+                                spreadRadius: 1,
+                                blurRadius: 6,
+                                offset: const Offset(0, 3),
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      child: Container(
-                        margin: const EdgeInsets.all(12),
-                        padding: const EdgeInsets.all(22),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: baseColor,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.4),
-                              spreadRadius: 1,
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
+                          child: Text(
+                            loc.translate(isOut ? 'out' : 'store'),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
-                          ],
-                        ),
-                        child: Text(
-                          loc.translate(isOut ? 'out' : 'store'),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
           );
         },
-      ),
-    );
-  }
-  /// Helper widget used to display a single row of label/value information.
-
-
-  Widget _buildInfoStripe(BuildContext context, String label, String value, bool isDark, {bool alt = false}) {
-    final theme = Theme.of(context);
-    final bgColor = isDark
-        ? (alt ? const Color(0xFF2A2A2A) : const Color(0xFF1E1E1E))
-        : (alt ? const Color(0xFFF5F5F5) : const Color(0xFFFFFFFF));
-    return Container(
-      color: bgColor,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
-          Flexible(
-            child: Text(
-              value,
-              style: theme.textTheme.bodyMedium,
-              textAlign: TextAlign.right,
-            ),
-          ),
-        ],
       ),
     );
   }

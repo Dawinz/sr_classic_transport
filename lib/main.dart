@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
+import 'splash_screen.dart';
 import 'onboarding_screen.dart';
 import 'enhanced_history_page.dart';
 import 'track_page.dart';
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
     Provider.of<LanguageProvider>(context);
 
     return MaterialApp(
-      title: 'SR Classic Transport',
+      title: 'Sr Classic Coach',
       debugShowCheckedModeBanner: false,
       themeMode: themeProvider.themeMode,
       theme: ThemeData.light().copyWith(
@@ -82,7 +83,7 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
         ),
       ),
-      home: isOnboardingComplete ? MyHomePage() : OnboardingScreen(),
+      home: SplashScreen(isOnboardingComplete: isOnboardingComplete),
     );
   }
 }
@@ -120,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SR Classic Transport'),
+        title: const Text('Sr Classic Coach'),
         elevation: 0,
       ),
       body: AnimatedSwitcher(
